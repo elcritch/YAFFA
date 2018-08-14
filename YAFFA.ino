@@ -1,3 +1,4 @@
+
 /******************************************************************************/
 /**  YAFFA - Yet Another Forth for Arduino                                   **/
 /**  Version 0.7.0                                                           **/
@@ -85,10 +86,12 @@
 
 #include "YAFFA.h"
 #include "Error_Codes.h"
-#include <MemoryFree.h>  // https://github.com/McNeight/MemoryFree
+#include "MemoryFree.h"  // https://github.com/McNeight/MemoryFree
 #include <EEPROM.h>
 #include <avr/pgmspace.h>
-
+//#include <SPI.h>
+//#include <Wire.h>
+ 
 /******************************************************************************/
 /** Major and minor revision numbers                                         **/
 /******************************************************************************/
@@ -188,7 +191,8 @@ uint8_t base;  // stores the number conversion radix
 /******************************************************************************/
 /** Initialization                                                           **/
 /******************************************************************************/
-void setup(void) {                
+void setup(void) {
+  delay(2000);                
   uint16_t mem;
   uint8_t e1,e2;
   Serial.begin(19200);     // Open serial communications:
@@ -198,7 +202,7 @@ void setup(void) {
 
   pHere = &forthSpace[0];
   pOldHere = pHere;
-  
+
   Serial.print(F("\n YAFFA - Yet Another Forth For Arduino, "));
   Serial.print(F("Version "));
   Serial.print(YAFFA_MAJOR,DEC);
@@ -208,6 +212,8 @@ void setup(void) {
   Serial.print(F(" This program comes with ABSOLUTELY NO WARRANTY.\r\n"));
   Serial.print(F(" This is free software, and you are welcome to\r\n"));
   Serial.println(F(" redistribute it under certain conditions.\r\n"));
+  Serial.println(F("\r\n LED_BUILTIN: "));
+  Serial.println(LED_BUILTIN);
   
   Serial.print(F(" Terminal Echo is "));
   Serial.print(flags & ECHO_ON ? F("On\r\n") : F("Off\r\n"));

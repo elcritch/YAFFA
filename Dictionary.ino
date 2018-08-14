@@ -21,6 +21,8 @@
 /**                                                                          **/
 /******************************************************************************/
 #include "YAFFA.h"
+#include <SPI.h>
+#include <Wire.h>
 
 const char not_done_str[] PROGMEM = " NOT Implemented Yet \n\r";
 
@@ -2574,6 +2576,63 @@ const PROGMEM char to_name_str[] = ">name";
 void _toName(void) {
   xtToName(pop());
 }
+
+// =============== SPI =============== //
+const PROGMEM char spiInit_str[] = "spiInit";
+void _spiInit(void) {
+  SPI.begin();
+}
+
+const PROGMEM char spiRead_str[] = "spiRead";
+void _spiRead(void) {
+  uint8_t count = pop();
+  for (; count >= 0; count--) {
+    push(SPI.transfer(0x00));
+  }
+}
+
+const PROGMEM char spiWrite_str[] = "spiWrite";
+void _spiWrite(void) {
+  uint8_t count = pop();
+  for (; count >= 0; count--) {
+    SPI.transfer(pop());
+  }
+}
+
+const PROGMEM char spiXfer_str[] = "spiXfer";
+void _spiXfer(void) {
+  uint8_t count = pop();
+  for (; count >= 0; count--) {
+    push(SPI.transfer((uint8_t)pop()));
+  }
+}
+
+// =============== I2C =============== //
+const PROGMEM char i2cInit_str[] = "i2cInit";
+void _i2cInit(void) {
+  Wire.begin();
+}
+
+const PROGMEM char i2cRead_str[] = "i2cRead";
+void _i2cRead(void) {
+  uint8_t addr = pop();
+  uint8_t count = pop();
+  Wire.requestFrom(addr, count);
+
+  while (Wire.available()) { // slave may send less than requested
+    push(Wire.read()); // receive a byte as character
+  }
+}
+
+const PROGMEM char i2cWrite_str[] = "i2cWrite";
+void _i2cWrite(void) {
+  Wire.beginTransmission(pop()); // transmit to device #8
+  uint8_t count = pop();
+  for (; count >= 0; count--) {
+    Wire.write(pop());
+  }
+  Wire.endTransmission();    // stop transmitting
+}
 #endif
 
 /*********************************************************************************/
@@ -2788,6 +2847,13 @@ const PROGMEM flashEntry_t flashDict[] = {
   { analogRead_str,     _analogRead,      NORMAL },
   { analogWrite_str,    _analogWrite,     NORMAL },
   { to_name_str,        _toName,          NORMAL },
+  { spiInit_str,        _spiInit,         NORMAL },
+  { spiRead_str,        _spiRead,         NORMAL },
+  { spiWrite_str,       _spiWrite,        NORMAL },
+  { spiXfer_str,        _spiXfer,         NORMAL },
+  { i2cInit_str,        _i2cInit,         NORMAL },
+  { i2cRead_str,        _i2cRead,         NORMAL },
+  { i2cWrite_str,       _i2cWrite,        NORMAL },
 #endif
 
 #ifdef EN_EEPROM_OPS
